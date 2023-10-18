@@ -46,7 +46,7 @@ class _TaskListWidgetState extends State<TaskListWidget> {
               Text(
                 'Rencana:',
                 style: TextStyle(
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.bold,
                     color: widget.isToday
                         ? Colors.lightBlue
                         : (widget.isYesterday ? Colors.red : Colors.blue)),
@@ -54,12 +54,12 @@ class _TaskListWidgetState extends State<TaskListWidget> {
               const SizedBox(
                 height: 10,
               ),
-              GestureDetector(
-                  onTap: () => Get.to(const EditTaskScreen()),
-                  child: const PlanningTaskWidget()),
-              const PlanningTaskWidget(),
-              const PlanningTaskWidget(),
-              const PlanningTaskWidget(),
+              // GestureDetector(
+              //     onTap: () => Get.to(const EditTaskScreen()),
+              //     child: const PlanningTaskWidget()),
+              // const PlanningTaskWidget(),
+              // const PlanningTaskWidget(),
+              // const PlanningTaskWidget(),
             ],
           ),
         ),
@@ -71,7 +71,7 @@ class _TaskListWidgetState extends State<TaskListWidget> {
               Text(
                 'Selesai:',
                 style: TextStyle(
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.bold,
                     color: widget.isToday
                         ? Colors.lightBlue
                         : (widget.isYesterday ? Colors.red : Colors.blue)),
@@ -79,10 +79,10 @@ class _TaskListWidgetState extends State<TaskListWidget> {
               const SizedBox(
                 height: 10,
               ),
-              const DoneTaskWidget(),
-              const DoneTaskWidget(),
-              const DoneTaskWidget(),
-              const DoneTaskWidget(),
+              // const DoneTaskWidget(),
+              // const DoneTaskWidget(),
+              // const DoneTaskWidget(),
+              // const DoneTaskWidget(),
             ],
           ),
         )

@@ -12,7 +12,7 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   static List<Widget> pages = <Widget>[
     const TaskListWidget(
       isYesterday: true,
