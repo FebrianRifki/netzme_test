@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
 class EditTaskScreen extends StatefulWidget {
-  const EditTaskScreen({super.key});
-
+  const EditTaskScreen({super.key, required this.taskData});
+  final Map<String, dynamic> taskData;
   @override
   State<EditTaskScreen> createState() => _EditTaskScreenState();
 }
 
 class _EditTaskScreenState extends State<EditTaskScreen> {
+  List<String> list = <String>['Hari ini', 'Kemarin', 'Besok'];
+  String dropdownValue = 'Hari ini';
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    const List<String> list = <String>['Hari ini', 'Kemarin', 'Besok'];
-    String dropdownValue = list.first;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(

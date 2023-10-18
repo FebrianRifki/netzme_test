@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/src/app/models/task.dart';
 
 class PlanningTaskWidget extends StatelessWidget {
-  const PlanningTaskWidget({
-    super.key,
-  });
+  const PlanningTaskWidget({super.key, required this.taskData});
+
+  final Map<String, dynamic> taskData;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class PlanningTaskWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("1. Mengerjakan Task 699"),
+            Text(taskData['name']),
             IconButton(
                 onPressed: () {},
                 icon: const Icon(

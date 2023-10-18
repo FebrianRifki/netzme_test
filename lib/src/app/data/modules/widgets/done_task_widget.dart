@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class DoneTaskWidget extends StatelessWidget {
-  const DoneTaskWidget({super.key});
+  const DoneTaskWidget({super.key, required this.taskData});
+  final Map<String, dynamic> taskData;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,9 @@ class DoneTaskWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              "1. Mengerjakan Task 699",
-              style: TextStyle(decoration: TextDecoration.lineThrough),
+            Text(
+              taskData['name'],
+              style: const TextStyle(decoration: TextDecoration.lineThrough),
             ),
             IconButton(
                 onPressed: () {},

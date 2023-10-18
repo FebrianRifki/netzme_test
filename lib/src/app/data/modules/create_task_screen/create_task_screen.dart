@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:to_do_list/src/app/data/modules/create_task_screen/create_task_controller.dart';
 
 class CreateTaskScreen extends StatefulWidget {
   const CreateTaskScreen({super.key});
@@ -8,11 +10,15 @@ class CreateTaskScreen extends StatefulWidget {
 }
 
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
+  final TextEditingController nameTaskController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final CreateTaskController controller = Get.put(CreateTaskController());
+
+  List<String> list = <String>['Hari ini', 'Besok'];
+  String dropdownValue = 'Hari ini';
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    const List<String> list = <String>['Hari ini', 'Kemarin', 'Besok'];
-    String dropdownValue = list.first;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,6 +41,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   child: Column(
                     children: [
                       TextFormField(
+                        controller: nameTaskController,
                         decoration: const InputDecoration(
                             label: Text('Nama Task'),
                             border: OutlineInputBorder(
@@ -49,7 +56,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         child: DropdownMenu<String>(
                           initialSelection: list.first,
                           onSelected: (String? value) {
-                            // This is called when the user selects an item.
+                            // Call setState() to update the state of the widget
                             setState(() {
                               dropdownValue = value!;
                             });
@@ -68,8 +75,9 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                       ),
                       SizedBox(
                         height: size.height * 0.3,
-                        child: const TextField(
-                          decoration: InputDecoration(
+                        child: TextField(
+                          controller: descriptionController,
+                          decoration: const InputDecoration(
                             labelText: 'Deskripsi',
                             border: OutlineInputBorder(
                               borderRadius:
@@ -94,8 +102,11 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
                         ),
-                        onPressed: () {},
-                        child: Text('Buat Jadwal'),
+                        onPressed: () async {
+                          await controller.createTask(nameTaskController.text,
+                              dropdownValue, descriptionController.text);
+                        },
+                        child: const Text('Buat Jadwal'),
                       ),
                     ),
                     const SizedBox(
