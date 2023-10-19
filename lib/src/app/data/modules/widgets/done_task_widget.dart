@@ -11,7 +11,9 @@ class DoneTaskWidget extends StatelessWidget {
   final bool isToday;
   final bool isTomorrow;
   final VoidCallback onPressedCallBack;
-
+  static const TextStyle lineThroughStyle = TextStyle(
+    decoration: TextDecoration.lineThrough,
+  );
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,7 +42,7 @@ class DoneTaskWidget extends StatelessWidget {
                 onPressed: () => onPressedCallBack(),
                 icon: Icon(
                   isToday
-                      ? Icons.arrow_drop_down
+                      ? Icons.arrow_drop_up
                       : isTomorrow
                           ? Icons.arrow_left
                           : Icons.arrow_right,

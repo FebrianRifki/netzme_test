@@ -13,7 +13,7 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    var dueDate = taskData['dueDate'];
+    var dueDate = taskData['due_date'];
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -58,7 +58,7 @@ class DetailScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
                               borderRadius: BorderRadius.circular(10)),
-                          child: Text(taskData['dueDate']),
+                          child: Text(taskData['due_date']),
                         ),
                         const SizedBox(
                           height: 15,

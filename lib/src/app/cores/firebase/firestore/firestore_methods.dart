@@ -31,7 +31,7 @@ class FireStoreMethods {
     try {
       var querySnapshot = await _firestore
           .collection('tasks')
-          .where('dueDate', isEqualTo: 'Hari ini')
+          .where('due_date', isEqualTo: 'Hari ini')
           .where('status', isEqualTo: 'On-progress')
           .get();
       todayList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
@@ -45,7 +45,7 @@ class FireStoreMethods {
   getTodayDoneTask() async {
     var querySnapshot = await _firestore
         .collection('tasks')
-        .where('dueDate', isEqualTo: 'Hari ini')
+        .where('due_date', isEqualTo: 'Hari ini')
         .where('status', isEqualTo: 'Done')
         .get();
     todayDoneList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
@@ -55,7 +55,7 @@ class FireStoreMethods {
   getYesterdayTasks() async {
     var querySnapshot = await _firestore
         .collection('tasks')
-        .where('dueDate', isEqualTo: 'Kemarin')
+        .where('due_date', isEqualTo: 'Kemarin')
         .where('status', isEqualTo: 'On-progress')
         .get();
     yesterdayList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
@@ -65,7 +65,7 @@ class FireStoreMethods {
   getYesterdayDoneTasks() async {
     var querySnapshot = await _firestore
         .collection('tasks')
-        .where('dueDate', isEqualTo: 'Kemarin')
+        .where('due_date', isEqualTo: 'Kemarin')
         .where('status', isEqualTo: 'Done')
         .get();
     yesterdayDoneList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
@@ -76,7 +76,7 @@ class FireStoreMethods {
     try {
       var querySnapshot = await _firestore
           .collection('tasks')
-          .where('dueDate', isEqualTo: 'Besok')
+          .where('due_date', isEqualTo: 'Besok')
           .where('status', isEqualTo: 'On-progress')
           .get();
       tomorrowList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
@@ -91,7 +91,7 @@ class FireStoreMethods {
     try {
       var querySnapshot = await _firestore
           .collection('tasks')
-          .where('dueDate', isEqualTo: 'Besok')
+          .where('due_date', isEqualTo: 'Besok')
           .where('status', isEqualTo: 'Done')
           .get();
       tomorrowDoneList.assignAll(querySnapshot.docs.map((doc) => doc.data()));

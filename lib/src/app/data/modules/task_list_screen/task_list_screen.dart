@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_do_list/src/app/cores/utils/values/images_string.dart';
@@ -30,7 +31,7 @@ class TaskListScreen extends GetView<TaskListController> {
                 child: FloatingActionButton(
                   onPressed: () async {
                     await Get.to(() => const CreateTaskScreen());
-                    controller.fetchTodayTasks();
+                    controller.fetchAllData();
                   },
                   backgroundColor:
                       controller.deleting.isTrue ? Colors.red : Colors.blue,
@@ -186,10 +187,28 @@ class TaskListScreen extends GetView<TaskListController> {
                                               ? PlanningTaskWidget(
                                                   taskData: taskData,
                                                   isTomorrow: true,
-                                                  onPressedCallBack: () {})
+                                                  onPressedCallBack: () {
+                                                    Map<String, dynamic>
+                                                        updatedData = {
+                                                      'status': 'On-progress',
+                                                      'due_date': 'Hari ini'
+                                                    };
+                                                    controller.updateTask(
+                                                        taskData['id'],
+                                                        updatedData);
+                                                  })
                                               : PlanningTaskWidget(
                                                   taskData: taskData,
-                                                  onPressedCallBack: () {}),
+                                                  onPressedCallBack: () {
+                                                    Map<String, dynamic>
+                                                        updatedData = {
+                                                      'status': 'On-progress',
+                                                      'due_date': 'Hari ini'
+                                                    };
+                                                    controller.updateTask(
+                                                        taskData['id'],
+                                                        updatedData);
+                                                  }),
                                     ),
                                   );
                                 },
@@ -197,72 +216,160 @@ class TaskListScreen extends GetView<TaskListController> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Selesai:',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: isToday
-                                        ? Colors.lightBlue
-                                        : (isYesterday!
-                                            ? Colors.red
-                                            : Colors.blue)),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: isToday
-                                    ? controller.doneTaskList.length
-                                    : isTomorrow!
-                                        ? controller.tomorrowDoneTaskList.length
-                                        : controller
-                                            .yesterdayDoneTaskList.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final taskData = isToday
-                                      ? controller.doneTaskList[index]
-                                      : isTomorrow!
-                                          ? controller
-                                              .tomorrowDoneTaskList[index]
-                                          : controller
-                                              .yesterdayDoneTaskList[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      // Get.to(() =>
-                                      //     EditTaskScreen(taskData: taskData));
-                                    },
-                                    child: isToday
-                                        ? DoneTaskWidget(
-                                            taskData: taskData,
-                                            isToday: true,
-                                            onPressedCallBack: () {
-                                              Map<String, dynamic> updatedData =
-                                                  {'status': 'On-progress'};
-                                              controller.updateTask(
-                                                  taskData['id'], updatedData);
-                                            },
-                                          )
-                                        : isTomorrow!
-                                            ? DoneTaskWidget(
-                                                taskData: taskData,
-                                                isTomorrow: true,
-                                                onPressedCallBack: () {},
-                                              )
-                                            : DoneTaskWidget(
-                                                taskData: taskData,
-                                                onPressedCallBack: () {},
-                                              ),
-                                  );
-                                },
+                        isToday
+                            ? Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Selesai:',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: isToday
+                                              ? Colors.lightBlue
+                                              : (isYesterday!
+                                                  ? Colors.red
+                                                  : Colors.blue)),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: isToday
+                                          ? controller.doneTaskList.length
+                                          : isTomorrow!
+                                              ? controller
+                                                  .tomorrowDoneTaskList.length
+                                              : controller
+                                                  .yesterdayDoneTaskList.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        final taskData = isToday
+                                            ? controller.doneTaskList[index]
+                                            : isTomorrow!
+                                                ? controller
+                                                    .tomorrowDoneTaskList[index]
+                                                : controller
+                                                        .yesterdayDoneTaskList[
+                                                    index];
+                                        return GestureDetector(
+                                          onTap: () {
+                                            // Get.to(() =>
+                                            //     EditTaskScreen(taskData: taskData));
+                                          },
+                                          child: isToday
+                                              ? DoneTaskWidget(
+                                                  taskData: taskData,
+                                                  isToday: true,
+                                                  onPressedCallBack: () {
+                                                    Map<String, dynamic>
+                                                        updatedData = {
+                                                      'status': 'On-progress'
+                                                    };
+                                                    controller.updateTask(
+                                                        taskData['id'],
+                                                        updatedData);
+                                                  },
+                                                )
+                                              : isTomorrow!
+                                                  ? DoneTaskWidget(
+                                                      taskData: taskData,
+                                                      isTomorrow: true,
+                                                      onPressedCallBack: () {},
+                                                    )
+                                                  : DoneTaskWidget(
+                                                      taskData: taskData,
+                                                      onPressedCallBack: () {},
+                                                    ),
+                                        );
+                                      },
+                                    )
+                                  ],
+                                ),
                               )
-                            ],
-                          ),
-                        ),
+                            : isYesterday!
+                                ? Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Selesai:',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: isToday
+                                                  ? Colors.lightBlue
+                                                  : (isYesterday!
+                                                      ? Colors.red
+                                                      : Colors.blue)),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: isToday
+                                              ? controller.doneTaskList.length
+                                              : isTomorrow!
+                                                  ? controller
+                                                      .tomorrowDoneTaskList
+                                                      .length
+                                                  : controller
+                                                      .yesterdayDoneTaskList
+                                                      .length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            final taskData = isToday
+                                                ? controller.doneTaskList[index]
+                                                : isTomorrow!
+                                                    ? controller
+                                                            .tomorrowDoneTaskList[
+                                                        index]
+                                                    : controller
+                                                            .yesterdayDoneTaskList[
+                                                        index];
+                                            return GestureDetector(
+                                              onTap: () {
+                                                // Get.to(() =>
+                                                //     EditTaskScreen(taskData: taskData));
+                                              },
+                                              child: isToday
+                                                  ? DoneTaskWidget(
+                                                      taskData: taskData,
+                                                      isToday: true,
+                                                      onPressedCallBack: () {
+                                                        Map<String, dynamic>
+                                                            updatedData = {
+                                                          'status':
+                                                              'On-progress'
+                                                        };
+                                                        controller.updateTask(
+                                                            taskData['id'],
+                                                            updatedData);
+                                                      },
+                                                    )
+                                                  : isTomorrow!
+                                                      ? DoneTaskWidget(
+                                                          taskData: taskData,
+                                                          isTomorrow: true,
+                                                          onPressedCallBack:
+                                                              () {},
+                                                        )
+                                                      : DoneTaskWidget(
+                                                          taskData: taskData,
+                                                          onPressedCallBack:
+                                                              () {},
+                                                        ),
+                                            );
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                : Container(),
                       ],
                     ),
                   ))));

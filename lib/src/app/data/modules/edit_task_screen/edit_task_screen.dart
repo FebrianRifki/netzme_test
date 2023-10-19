@@ -64,7 +64,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: DropdownMenu<String>(
-                            initialSelection: widget.taskData["dueDate"],
+                            initialSelection: widget.taskData["due_date"],
                             onSelected: (String? value) {
                               // This is called when the user selects an item.
                               setState(() {
@@ -117,7 +117,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       onPressed: () {
                         var updatedData = {
                           'name': taskNameController.text,
-                          'dueDate': dropdownValue,
+                          'due_date': dropdownValue,
                           'description': descriptionController.text
                         };
                         controller.updateTask(
