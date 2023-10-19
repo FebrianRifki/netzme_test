@@ -8,6 +8,6 @@ class ControllerBinding implements Bindings {
   void dependencies() {
     Get.lazyPut(() => LoginController());
     Get.lazyPut(() => SignUpController());
-    Get.lazyPut(() => TaskListController(isToday: true));
+    Get.lazyPut(() => TaskListController());
   }
 }

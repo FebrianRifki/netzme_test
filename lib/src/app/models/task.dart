@@ -1,12 +1,18 @@
 class Task {
+  final String id;
   final String name;
   final String status;
   final String description;
-  Task({required this.name, required this.status, required this.description});
+  Task(
+      {required this.id,
+      required this.name,
+      required this.status,
+      required this.description});
 
   Map<String, dynamic> toJson() => {
+        'id': id,
         'name': name,
-        'dueDate': status,
+        'due_date': status,
         'description': description,
         'status': 'On-progress',
         'created_at': DateTime.now()

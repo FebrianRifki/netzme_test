@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
 class DoneTaskWidget extends StatelessWidget {
-  const DoneTaskWidget({super.key, required this.taskData});
+  const DoneTaskWidget(
+      {super.key,
+      required this.taskData,
+      this.isToday = false,
+      this.isTomorrow = false,
+      required this.onPressedCallBack});
   final Map<String, dynamic> taskData;
+  final bool isToday;
+  final bool isTomorrow;
+  final VoidCallback onPressedCallBack;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +37,19 @@ class DoneTaskWidget extends StatelessWidget {
               style: const TextStyle(decoration: TextDecoration.lineThrough),
             ),
             IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_right,
+                onPressed: () => onPressedCallBack(),
+                icon: Icon(
+                  isToday
+                      ? Icons.arrow_drop_down
+                      : isTomorrow
+                          ? Icons.arrow_left
+                          : Icons.arrow_right,
                   size: 50,
+                  color: isToday
+                      ? Colors.green
+                      : isTomorrow
+                          ? Colors.blue
+                          : Colors.red,
                 ))
           ],
         ),

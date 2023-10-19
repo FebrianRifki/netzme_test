@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:to_do_list/src/app/models/task.dart';
 
 class PlanningTaskWidget extends StatelessWidget {
-  const PlanningTaskWidget({super.key, required this.taskData});
+  const PlanningTaskWidget(
+      {super.key,
+      required this.taskData,
+      this.isToday = false,
+      this.isTomorrow = false,
+      required this.onPressedCallBack});
 
   final Map<String, dynamic> taskData;
+  final bool isToday;
+  final bool isTomorrow;
+  final VoidCallback onPressedCallBack;
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +36,19 @@ class PlanningTaskWidget extends StatelessWidget {
           children: [
             Text(taskData['name']),
             IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_right,
+                onPressed: () => onPressedCallBack(),
+                icon: Icon(
+                  isToday
+                      ? Icons.arrow_drop_down
+                      : isTomorrow
+                          ? Icons.arrow_left
+                          : Icons.arrow_right,
                   size: 50,
+                  color: isToday
+                      ? Colors.green
+                      : isTomorrow
+                          ? Colors.blue
+                          : Colors.red,
                 ))
           ],
         ),

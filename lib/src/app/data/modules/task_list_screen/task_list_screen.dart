@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:to_do_list/src/app/cores/utils/values/images_string.dart';
 import 'package:to_do_list/src/app/data/modules/create_task_screen/create_task_screen.dart';
+import 'package:to_do_list/src/app/data/modules/detail_screen/detail_screen.dart';
 import 'package:to_do_list/src/app/data/modules/edit_task_screen/edit_task_screen.dart';
 import 'package:to_do_list/src/app/data/modules/task_list_screen/task_list_controller.dart';
 import 'package:to_do_list/src/app/data/modules/widgets/done_task_widget.dart';
@@ -12,29 +13,45 @@ class TaskListScreen extends GetView<TaskListController> {
       {super.key,
       this.isToday = false,
       this.isYesterday = false,
-      this.isTomorrow});
+      this.isTomorrow = false});
   bool isToday;
   bool? isYesterday;
   bool? isTomorrow;
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await Get.to(() => const CreateTaskScreen());
-            controller.fetchTodayTasks();
+        floatingActionButton: DragTarget(
+          builder: (_, __, ___) {
+            return Obx(
+              () => Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    await Get.to(() => const CreateTaskScreen());
+                    controller.fetchTodayTasks();
+                  },
+                  backgroundColor:
+                      controller.deleting.isTrue ? Colors.red : Colors.blue,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0)),
+                  child: Icon(
+                    controller.deleting.isTrue ? Icons.delete : Icons.add,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            );
           },
-          backgroundColor: Colors.blue,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
+          onAccept: (taskData) {
+            controller.deleteTask(controller.dragId.value);
+          },
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: SafeArea(
-            child: Obx(() => controller.taskList.isEmpty
+            child: Obx(() => controller.taskList.isEmpty &&
+                    controller.doneTaskList.isEmpty
                 ? Center(
                     child: SizedBox(
                       child: Column(
@@ -99,26 +116,83 @@ class TaskListScreen extends GetView<TaskListController> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              SizedBox(
-                                height: 300,
-                                width: double.infinity,
-                                child: ListView.builder(
-                                  itemCount: controller.taskList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final taskData = controller.taskList[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        // Anda dapat menavigasi ke EditTaskScreen dengan membawa data task:
-                                        Get.to(() =>
-                                            EditTaskScreen(taskData: taskData));
-                                      },
-                                      child: PlanningTaskWidget(
-                                        taskData: taskData,
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: isToday
+                                    ? controller.taskList.length
+                                    : isTomorrow!
+                                        ? controller.tomorrowTaskList.length
+                                        : controller.yesterdayTaskList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final taskData = isToday
+                                      ? controller.taskList[index]
+                                      : isTomorrow!
+                                          ? controller.tomorrowTaskList[index]
+                                          : controller.yesterdayTaskList[index];
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      // await Get.to(() =>
+                                      //     EditTaskScreen(taskData: taskData));
+                                      // controller.fetchAllData();
+                                      Get.to(() =>
+                                          DetailScreen(taskData: taskData));
+                                    },
+                                    child: LongPressDraggable(
+                                      data: taskData,
+                                      onDragStarted: () => controller
+                                          .changeDeleting(true, taskData["id"]),
+                                      onDraggableCanceled: (_, __) =>
+                                          controller.changeDeleting(
+                                              false, taskData["id"]),
+                                      feedback: Material(
+                                        color: Colors.transparent,
+                                        child: SizedBox(
+                                          width: size.width * 1,
+                                          child: Opacity(
+                                            opacity: 0.8,
+                                            child: isToday
+                                                ? PlanningTaskWidget(
+                                                    taskData: taskData,
+                                                    isToday: true,
+                                                    onPressedCallBack: () {})
+                                                : isTomorrow!
+                                                    ? PlanningTaskWidget(
+                                                        taskData: taskData,
+                                                        isTomorrow: true,
+                                                        onPressedCallBack:
+                                                            () {})
+                                                    : PlanningTaskWidget(
+                                                        taskData: taskData,
+                                                        onPressedCallBack:
+                                                            () {}),
+                                          ),
+                                        ),
                                       ),
-                                    );
-                                  },
-                                ),
+                                      child: isToday
+                                          ? PlanningTaskWidget(
+                                              taskData: taskData,
+                                              isToday: true,
+                                              onPressedCallBack: () {
+                                                Map<String, dynamic>
+                                                    updatedData = {
+                                                  'status': 'Done'
+                                                };
+                                                controller.updateTask(
+                                                    taskData['id'],
+                                                    updatedData);
+                                              },
+                                            )
+                                          : isTomorrow!
+                                              ? PlanningTaskWidget(
+                                                  taskData: taskData,
+                                                  isTomorrow: true,
+                                                  onPressedCallBack: () {})
+                                              : PlanningTaskWidget(
+                                                  taskData: taskData,
+                                                  onPressedCallBack: () {}),
+                                    ),
+                                  );
+                                },
                               )
                             ],
                           ),
@@ -141,32 +215,51 @@ class TaskListScreen extends GetView<TaskListController> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              SizedBox(
-                                height: 300,
-                                width: double.infinity,
-                                child: ListView.builder(
-                                  itemCount: controller.doneTaskList.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final taskData =
-                                        controller.doneTaskList[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        // Anda dapat menavigasi ke EditTaskScreen dengan membawa data task:
-                                        Get.to(() =>
-                                            EditTaskScreen(taskData: taskData));
-                                      },
-                                      child: DoneTaskWidget(
-                                        taskData: taskData,
-                                      ),
-                                    );
-                                  },
-                                ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: isToday
+                                    ? controller.doneTaskList.length
+                                    : isTomorrow!
+                                        ? controller.tomorrowDoneTaskList.length
+                                        : controller
+                                            .yesterdayDoneTaskList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final taskData = isToday
+                                      ? controller.doneTaskList[index]
+                                      : isTomorrow!
+                                          ? controller
+                                              .tomorrowDoneTaskList[index]
+                                          : controller
+                                              .yesterdayDoneTaskList[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      // Get.to(() =>
+                                      //     EditTaskScreen(taskData: taskData));
+                                    },
+                                    child: isToday
+                                        ? DoneTaskWidget(
+                                            taskData: taskData,
+                                            isToday: true,
+                                            onPressedCallBack: () {
+                                              Map<String, dynamic> updatedData =
+                                                  {'status': 'On-progress'};
+                                              controller.updateTask(
+                                                  taskData['id'], updatedData);
+                                            },
+                                          )
+                                        : isTomorrow!
+                                            ? DoneTaskWidget(
+                                                taskData: taskData,
+                                                isTomorrow: true,
+                                                onPressedCallBack: () {},
+                                              )
+                                            : DoneTaskWidget(
+                                                taskData: taskData,
+                                                onPressedCallBack: () {},
+                                              ),
+                                  );
+                                },
                               )
-                              // const DoneTaskWidget(),
-                              // const DoneTaskWidget(),
-                              // const DoneTaskWidget(),
-                              // const DoneTaskWidget(),
                             ],
                           ),
                         ),

@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthMethod {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Register user
   Future<String> singUpUser(
@@ -13,11 +11,6 @@ class AuthMethod {
       if (email.isNotEmpty || password.isNotEmpty) {
         await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        // UserModel user = UserModel(email: email, password: password);
-        // Map<String, dynamic> userData =
-        //     user.toJson(email: email, password: password);
-
-        // await _firestore.collection('user').doc(cred.user!.uid).set(userData);
       }
     } on FirebaseAuthException catch (err) {
       if (err.code == "invalid-email") {

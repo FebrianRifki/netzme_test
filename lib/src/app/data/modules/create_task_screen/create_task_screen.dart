@@ -21,102 +21,103 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                  height: 30,
-                  decoration: const BoxDecoration(color: Colors.blue),
-                  child: Center(
-                      child: Text('Tambah Jadwal',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .merge(const TextStyle(color: Colors.white))))),
-              const SizedBox(
+        child: Column(
+          children: [
+            Container(
                 height: 30,
-              ),
-              Container(
+                decoration: const BoxDecoration(color: Colors.blue),
+                child: Center(
+                    child: Text('Tambah Jadwal',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .merge(const TextStyle(color: Colors.white))))),
+            const SizedBox(
+              height: 30,
+            ),
+            Expanded(
+              child: Container(
                   padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: nameTaskController,
-                        decoration: const InputDecoration(
-                            label: Text('Nama Task'),
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: DropdownMenu<String>(
-                          initialSelection: list.first,
-                          onSelected: (String? value) {
-                            // Call setState() to update the state of the widget
-                            setState(() {
-                              dropdownValue = value!;
-                            });
-                          },
-                          dropdownMenuEntries: list
-                              .map<DropdownMenuEntry<String>>((String value) {
-                            return DropdownMenuEntry<String>(
-                              value: value,
-                              label: value,
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: size.height * 0.3,
-                        child: TextField(
-                          controller: descriptionController,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: nameTaskController,
                           decoration: const InputDecoration(
-                            labelText: 'Deskripsi',
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            ),
+                              label: Text('Nama Task'),
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)))),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: DropdownMenu<String>(
+                            initialSelection: list.first,
+                            onSelected: (String? value) {
+                              // Call setState() to update the state of the widget
+                              setState(() {
+                                dropdownValue = value!;
+                              });
+                            },
+                            dropdownMenuEntries: list
+                                .map<DropdownMenuEntry<String>>((String value) {
+                              return DropdownMenuEntry<String>(
+                                value: value,
+                                label: value,
+                              );
+                            }).toList(),
                           ),
-                          maxLines:
-                              null, // Ini akan memungkinkan teks input untuk diperpanjang secara otomatis.
                         ),
-                      )
-                    ],
-                  )),
-              Container(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                width: double
-                    .infinity, // Ini memastikan widget mengisi lebar penuh layar.
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
+                        const SizedBox(
+                          height: 15,
                         ),
-                        onPressed: () async {
-                          await controller.createTask(nameTaskController.text,
-                              dropdownValue, descriptionController.text);
-                        },
-                        child: const Text('Buat Jadwal'),
-                      ),
+                        SizedBox(
+                          height: size.height * 0.3,
+                          child: TextField(
+                            controller: descriptionController,
+                            decoration: const InputDecoration(
+                              labelText: 'Deskripsi',
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                              ),
+                            ),
+                            maxLines:
+                                null, // Ini akan memungkinkan teks input untuk diperpanjang secara otomatis.
+                          ),
+                        )
+                      ],
                     ),
-                    const SizedBox(
-                        width:
-                            10), // Menambahkan jarak horizontal antara tombol.
-                  ],
-                ),
-              )
-            ],
-          ),
+                  )),
+            ),
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+              width: double
+                  .infinity, // Ini memastikan widget mengisi lebar penuh layar.
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () async {
+                        await controller.createTask(nameTaskController.text,
+                            dropdownValue, descriptionController.text);
+                      },
+                      child: const Text('Buat Jadwal'),
+                    ),
+                  ),
+                  const SizedBox(
+                      width: 10), // Menambahkan jarak horizontal antara tombol.
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
