@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:to_do_list/src/app/data/modules/edit_task_screen/edit_task_screen.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   DetailScreen({super.key, required this.taskData});
 
   final Map<String, dynamic> taskData;
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
   List<String> list = <String>['Hari ini', 'Kemarin', 'Besok'];
+
   String dropdownValue = 'Hari ini';
+
   final TextEditingController taskNameController = TextEditingController();
+
   final TextEditingController descriptionController = TextEditingController();
+
   final TextEditingController statusController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    var dueDate = taskData['due_date'];
+    var dueDate = widget.taskData['due_date'];
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -40,7 +52,7 @@ class DetailScreen extends StatelessWidget {
                       children: [
                         TextFormField(
                           controller: taskNameController
-                            ..text = taskData['name'],
+                            ..text = widget.taskData['name'],
                           readOnly: true,
                           decoration: const InputDecoration(
                               label: Text('Nama jadwal'),
@@ -58,7 +70,7 @@ class DetailScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
                               borderRadius: BorderRadius.circular(10)),
-                          child: Text(taskData['due_date']),
+                          child: Text(widget.taskData['due_date']),
                         ),
                         const SizedBox(
                           height: 15,
@@ -67,7 +79,7 @@ class DetailScreen extends StatelessWidget {
                           height: size.height * 0.12,
                           child: TextFormField(
                             controller: statusController
-                              ..text = taskData['status'],
+                              ..text = widget.taskData['status'],
                             readOnly: true,
                             decoration: const InputDecoration(
                               labelText: 'status jadwal',
@@ -84,7 +96,7 @@ class DetailScreen extends StatelessWidget {
                           height: size.height * 0.12,
                           child: TextFormField(
                             controller: descriptionController
-                              ..text = taskData['description'],
+                              ..text = widget.taskData['description'],
                             readOnly: true,
                             decoration: const InputDecoration(
                               labelText: 'deskripsi jadwal',
@@ -101,6 +113,31 @@ class DetailScreen extends StatelessWidget {
                     )),
               ),
             ),
+            Container(
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+              width: double
+                  .infinity, // Ini memastikan widget mengisi lebar penuh layar.
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () async {
+                        await Get.to(
+                            () => EditTaskScreen(taskData: widget.taskData));
+                        setState(() {});
+                      },
+                      child: const Text('Edit Jadwal'),
+                    ),
+                  ),
+                  const SizedBox(
+                      width: 10), // Menambahkan jarak horizontal antara tombol.
+                ],
+              ),
+            )
           ],
         ),
       ),

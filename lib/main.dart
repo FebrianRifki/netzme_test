@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:to_do_list/src/app/data/controller_binding.dart';
 import 'package:to_do_list/src/app/data/modules/login_screen/login_screen.dart';
+import 'package:to_do_list/src/app/data/modules/splash_screen/splash_screen.dart';
+import 'package:to_do_list/src/app/data/modules/tasks_screen/task_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const TaskScreen(),
       initialBinding: ControllerBinding(),
     );
   }

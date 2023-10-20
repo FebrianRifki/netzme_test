@@ -57,9 +57,9 @@ class TaskListController extends GetxController {
   }
 
   deleteTask(id) async {
-    var result = await fireStoreMethods.deleteTask(id);
+    await fireStoreMethods.deleteTask(id);
     deleting.value = false;
-    print(result);
+    fetchAllData();
   }
 
   void changeDeleting(bool value, String id) {

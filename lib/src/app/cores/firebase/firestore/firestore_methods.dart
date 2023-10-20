@@ -118,4 +118,66 @@ class FireStoreMethods {
       return false;
     }
   }
+
+  handleDataStatus() async {
+    try {
+      Timestamp todayTimestamp = Timestamp.fromDate(DateTime.now());
+      Timestamp yesterdayTimestamp =
+          Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 1)));
+
+      // delete expired tasks
+      QuerySnapshot<Map<String, dynamic>> queryYesterdaySnapshot =
+          await _firestore
+              .collection('tasks')
+              .where('created_at', isLessThan: yesterdayTimestamp)
+              .where('status', isEqualTo: 'Kemarin')
+              .get();
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in queryYesterdaySnapshot.docs) {
+        String docId = doc.id;
+
+        await _firestore
+            .collection('tasks')
+            .doc(docId)
+            .update({'status': 'Kemarin'});
+      }
+
+      // update yesterday status tasks
+      QuerySnapshot<Map<String, dynamic>> queryTodaySnapshot = await _firestore
+          .collection('tasks')
+          .where('created_at', isLessThan: todayTimestamp)
+          .where('status', isEqualTo: 'Hari ini')
+          .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in queryTodaySnapshot.docs) {
+        String docId = doc.id;
+
+        await _firestore
+            .collection('tasks')
+            .doc(docId)
+            .update({'status': 'Kemarin'});
+      }
+
+      // update today status tasks
+      QuerySnapshot<Map<String, dynamic>> queryTomorrowSnapshot =
+          await _firestore
+              .collection('tasks')
+              .where('created_at', isLessThan: todayTimestamp)
+              .where('status', isEqualTo: 'Besok')
+              .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in queryTomorrowSnapshot.docs) {
+        String docId = doc.id;
+
+        await _firestore
+            .collection('tasks')
+            .doc(docId)
+            .update({'status': 'Hari ini'});
+      }
+    } catch (err) {
+      return err.toString();
+    }
+  }
 }

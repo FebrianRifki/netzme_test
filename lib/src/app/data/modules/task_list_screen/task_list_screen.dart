@@ -132,11 +132,10 @@ class TaskListScreen extends GetView<TaskListController> {
                                           : controller.yesterdayTaskList[index];
                                   return GestureDetector(
                                     onTap: () async {
-                                      // await Get.to(() =>
-                                      //     EditTaskScreen(taskData: taskData));
-                                      // controller.fetchAllData();
-                                      Get.to(() =>
-                                          DetailScreen(taskData: taskData));
+                                      await Get.to(() => DetailScreen(
+                                            taskData: taskData,
+                                          ));
+                                      controller.fetchAllData();
                                     },
                                     child: LongPressDraggable(
                                       data: taskData,

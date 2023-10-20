@@ -66,7 +66,6 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                           child: DropdownMenu<String>(
                             initialSelection: widget.taskData["due_date"],
                             onSelected: (String? value) {
-                              // This is called when the user selects an item.
                               setState(() {
                                 dropdownValue = value!;
                               });
@@ -94,8 +93,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                                     BorderRadius.all(Radius.circular(10)),
                               ),
                             ),
-                            maxLines:
-                                null, // Ini akan memungkinkan teks input untuk diperpanjang secara otomatis.
+                            maxLines: null,
                           ),
                         )
                       ],
@@ -104,8 +102,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             ),
             Container(
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-              width: double
-                  .infinity, // Ini memastikan widget mengisi lebar penuh layar.
+              width: double.infinity,
               child: Row(
                 children: [
                   Expanded(
@@ -122,12 +119,16 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         };
                         controller.updateTask(
                             widget.taskData['id'], updatedData);
+                        widget.taskData['name'] = taskNameController.text;
+                        widget.taskData['due_date'] = dropdownValue;
+                        widget.taskData['description'] =
+                            descriptionController.text;
+                        setState(() {});
                       },
                       child: const Text('Simpan Jadwal'),
                     ),
                   ),
-                  const SizedBox(
-                      width: 10), // Menambahkan jarak horizontal antara tombol.
+                  const SizedBox(width: 10),
                 ],
               ),
             ),
