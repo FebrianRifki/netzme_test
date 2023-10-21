@@ -15,6 +15,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _emailFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _passwordFormKey = GlobalKey<FormState>();
   final LoginController controller = Get.put(LoginController());
   @override
   Widget build(BuildContext context) {
@@ -33,37 +35,49 @@ class _LoginScreenState extends State<LoginScreen> {
             Column(
               children: [
                 Form(
-                    child: SizedBox(
-                  height: 40,
+                  key: _emailFormKey,
                   child: TextFormField(
                     controller: emailController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                         hintText: 'Email',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        contentPadding: EdgeInsets.only(bottom: 10, left: 15),
-                        border: OutlineInputBorder(
+                        errorText: controller.isErrorEmail.isTrue
+                            ? 'Email tidak boleh kosong'
+                            : null,
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        contentPadding:
+                            const EdgeInsets.only(bottom: 10, left: 15),
+                        border: const OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(30)))),
+                    validator: (value) {
+                      return controller.validateEmail(value);
+                    },
                   ),
-                )),
+                ),
                 const SizedBox(
                   height: 15,
                 ),
                 Form(
-                    child: SizedBox(
-                  height: 40,
+                  key: _passwordFormKey,
                   child: TextFormField(
                     controller: passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
+                        errorText: controller.isErrorPassword.isTrue
+                            ? 'Password tidak boleh kosong'
+                            : null,
                         hintText: 'Password',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        contentPadding: EdgeInsets.only(bottom: 10, left: 15),
-                        border: OutlineInputBorder(
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        contentPadding:
+                            const EdgeInsets.only(bottom: 10, left: 15),
+                        border: const OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(30)))),
+                    validator: (value) {
+                      return controller.validatePassword(value);
+                    },
                   ),
-                )),
+                ),
                 const SizedBox(
                   height: 20,
                 ),
@@ -73,10 +87,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white),
-                      onPressed: () {
-                        controller.signin(
-                            email: emailController.text,
-                            password: passwordController.text);
+                      onPressed: () async {
+                        if (_emailFormKey.currentState!.validate() &&
+                            _passwordFormKey.currentState!.validate()) {
+                          await controller.signin(
+                              email: emailController.text,
+                              password: passwordController.text);
+                        }
                       },
                       child: Obx(
                         () => controller.isProcessing.isTrue
@@ -93,26 +110,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                // SizedBox(
-                //   width: double.infinity,
-                //   child: ElevatedButton(
-                //       style: ElevatedButton.styleFrom(
-                //           backgroundColor: Colors.blue,
-                //           foregroundColor: Colors.white),
-                //       onPressed: () async {
-                //         var res = await controller.signout();
-                //         print(res);
-                //       },
-                //       child: Obx(
-                //         () => controller.isProcessing.isTrue
-                //             ? const SizedBox(
-                //                 height: 50,
-                //                 width: 50,
-                //                 child: CircularProgressIndicator(),
-                //               )
-                //             : const Text("Sign out"),
-                //       )),
-                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -128,6 +125,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ],
             ),
+            Obx(() {
+              if (controller.isSuccessLogin.isTrue) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  Get.snackbar(
+                    'Success',
+                    'Login Successfully!',
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 1),
+                    backgroundColor: Colors.blue,
+                  );
+                });
+              }
+              return const SizedBox.shrink();
+            }),
+            Obx(() {
+              if (controller.isWrongCredential.isTrue) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  Get.snackbar(
+                    'Gagal',
+                    controller.errorMessage.value,
+                    duration: const Duration(seconds: 1),
+                    backgroundColor: Colors.redAccent,
+                  );
+                });
+              }
+              return const SizedBox.shrink();
+            }),
           ],
         ),
       ),

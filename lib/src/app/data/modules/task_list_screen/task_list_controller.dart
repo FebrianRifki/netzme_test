@@ -68,11 +68,13 @@ class TaskListController extends GetxController {
   }
 
   fetchAllData() async {
+    isProcessing.value = true;
     await fetchTodayTasks();
     await fetchTodayDoneTasks();
     await fetchTomorrowTask();
     await fetchTodayDoneTasks();
     await fetchYesterdayTask();
     await fetchYesterdayDoneTask();
+    isProcessing.value = false;
   }
 }

@@ -11,6 +11,7 @@ class AuthMethod {
       if (email.isNotEmpty || password.isNotEmpty) {
         await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        res = "user created";
       }
     } on FirebaseAuthException catch (err) {
       if (err.code == "invalid-email") {

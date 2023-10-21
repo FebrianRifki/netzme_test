@@ -51,299 +51,145 @@ class TaskListScreen extends GetView<TaskListController> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         body: SafeArea(
-            child: Obx(() => controller.taskList.isEmpty &&
-                    controller.doneTaskList.isEmpty
-                ? Center(
-                    child: SizedBox(
-                      child: Column(
-                        children: [
-                          Container(
-                              height: 30,
-                              decoration:
-                                  const BoxDecoration(color: Colors.blue),
-                              child: Center(
-                                  child: Text(
-                                      isToday
-                                          ? 'Jadwal Hari ini'
-                                          : isYesterday!
-                                              ? 'Jadwal Kemaren'
-                                              : 'Jadwal Besok',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .merge(const TextStyle(
-                                              color: Colors.white))))),
-                          Image(image: AssetImage(emptyList)),
-                          Text("Belum ada jadwal yang dibuat",
-                              style: Theme.of(context).textTheme.bodyLarge),
-                        ],
-                      ),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            height: 30,
-                            decoration: const BoxDecoration(color: Colors.blue),
-                            child: Center(
-                                child: Text(
-                                    isToday
-                                        ? 'Jadwal Hari ini'
-                                        : isYesterday!
-                                            ? 'Jadwal Kemaren'
-                                            : 'Jadwal Besok',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .merge(const TextStyle(
-                                            color: Colors.white))))),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Rencana:',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: isToday
-                                        ? Colors.lightBlue
-                                        : (isYesterday!
-                                            ? Colors.red
-                                            : Colors.blue)),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: isToday
-                                    ? controller.taskList.length
-                                    : isTomorrow!
-                                        ? controller.tomorrowTaskList.length
-                                        : controller.yesterdayTaskList.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final taskData = isToday
-                                      ? controller.taskList[index]
-                                      : isTomorrow!
-                                          ? controller.tomorrowTaskList[index]
-                                          : controller.yesterdayTaskList[index];
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      await Get.to(() => DetailScreen(
-                                            taskData: taskData,
-                                          ));
-                                      controller.fetchAllData();
-                                    },
-                                    child: LongPressDraggable(
-                                      data: taskData,
-                                      onDragStarted: () => controller
-                                          .changeDeleting(true, taskData["id"]),
-                                      onDraggableCanceled: (_, __) =>
-                                          controller.changeDeleting(
-                                              false, taskData["id"]),
-                                      feedback: Material(
-                                        color: Colors.transparent,
-                                        child: SizedBox(
-                                          width: size.width * 1,
-                                          child: Opacity(
-                                            opacity: 0.8,
-                                            child: isToday
-                                                ? PlanningTaskWidget(
-                                                    taskData: taskData,
-                                                    isToday: true,
-                                                    onPressedCallBack: () {})
-                                                : isTomorrow!
-                                                    ? PlanningTaskWidget(
-                                                        taskData: taskData,
-                                                        isTomorrow: true,
-                                                        onPressedCallBack:
-                                                            () {})
-                                                    : PlanningTaskWidget(
-                                                        taskData: taskData,
-                                                        onPressedCallBack:
-                                                            () {}),
-                                          ),
-                                        ),
-                                      ),
-                                      child: isToday
-                                          ? PlanningTaskWidget(
-                                              taskData: taskData,
-                                              isToday: true,
-                                              onPressedCallBack: () {
-                                                Map<String, dynamic>
-                                                    updatedData = {
-                                                  'status': 'Done'
-                                                };
-                                                controller.updateTask(
-                                                    taskData['id'],
-                                                    updatedData);
-                                              },
-                                            )
-                                          : isTomorrow!
-                                              ? PlanningTaskWidget(
-                                                  taskData: taskData,
-                                                  isTomorrow: true,
-                                                  onPressedCallBack: () {
-                                                    Map<String, dynamic>
-                                                        updatedData = {
-                                                      'status': 'On-progress',
-                                                      'due_date': 'Hari ini'
-                                                    };
-                                                    controller.updateTask(
-                                                        taskData['id'],
-                                                        updatedData);
-                                                  })
-                                              : PlanningTaskWidget(
-                                                  taskData: taskData,
-                                                  onPressedCallBack: () {
-                                                    Map<String, dynamic>
-                                                        updatedData = {
-                                                      'status': 'On-progress',
-                                                      'due_date': 'Hari ini'
-                                                    };
-                                                    controller.updateTask(
-                                                        taskData['id'],
-                                                        updatedData);
-                                                  }),
-                                    ),
-                                  );
-                                },
+            child: Obx(() => SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          height: 30,
+                          decoration: const BoxDecoration(color: Colors.blue),
+                          child: Center(
+                              child: Text(
+                                  isToday
+                                      ? 'Jadwal Hari ini'
+                                      : isYesterday!
+                                          ? 'Jadwal Kemaren'
+                                          : 'Jadwal Besok',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .merge(const TextStyle(
+                                          color: Colors.white))))),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: controller.isProcessing.isTrue
+                            ? const LinearProgressIndicator(
+                                color: Colors.blue,
                               )
-                            ],
-                          ),
-                        ),
-                        isToday
-                            ? Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Selesai:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: isToday
-                                              ? Colors.lightBlue
-                                              : (isYesterday!
-                                                  ? Colors.red
-                                                  : Colors.blue)),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: isToday
-                                          ? controller.doneTaskList.length
-                                          : isTomorrow!
-                                              ? controller
-                                                  .tomorrowDoneTaskList.length
-                                              : controller
-                                                  .yesterdayDoneTaskList.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        final taskData = isToday
-                                            ? controller.doneTaskList[index]
+                            : controller.taskList.isEmpty &&
+                                    controller.doneTaskList.isEmpty
+                                ? Column(
+                                    children: [
+                                      Container(
+                                          height: 30,
+                                          decoration: const BoxDecoration(
+                                              color: Colors.blue),
+                                          child: Center(
+                                              child: Text(
+                                                  isToday
+                                                      ? 'Jadwal Hari ini'
+                                                      : isYesterday!
+                                                          ? 'Jadwal Kemaren'
+                                                          : 'Jadwal Besok',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .merge(const TextStyle(
+                                                          color:
+                                                              Colors.white))))),
+                                      Image(image: AssetImage(emptyList)),
+                                      Text("Belum ada jadwal yang dibuat",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge),
+                                    ],
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Rencana:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: isToday
+                                                ? Colors.lightBlue
+                                                : (isYesterday!
+                                                    ? Colors.red
+                                                    : Colors.blue)),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: isToday
+                                            ? controller.taskList.length
                                             : isTomorrow!
                                                 ? controller
-                                                    .tomorrowDoneTaskList[index]
+                                                    .tomorrowTaskList.length
                                                 : controller
-                                                        .yesterdayDoneTaskList[
-                                                    index];
-                                        return GestureDetector(
-                                          onTap: () {
-                                            // Get.to(() =>
-                                            //     EditTaskScreen(taskData: taskData));
-                                          },
-                                          child: isToday
-                                              ? DoneTaskWidget(
-                                                  taskData: taskData,
-                                                  isToday: true,
-                                                  onPressedCallBack: () {
-                                                    Map<String, dynamic>
-                                                        updatedData = {
-                                                      'status': 'On-progress'
-                                                    };
-                                                    controller.updateTask(
-                                                        taskData['id'],
-                                                        updatedData);
-                                                  },
-                                                )
-                                              : isTomorrow!
-                                                  ? DoneTaskWidget(
-                                                      taskData: taskData,
-                                                      isTomorrow: true,
-                                                      onPressedCallBack: () {},
-                                                    )
-                                                  : DoneTaskWidget(
-                                                      taskData: taskData,
-                                                      onPressedCallBack: () {},
-                                                    ),
-                                        );
-                                      },
-                                    )
-                                  ],
-                                ),
-                              )
-                            : isYesterday!
-                                ? Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Selesai:',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: isToday
-                                                  ? Colors.lightBlue
-                                                  : (isYesterday!
-                                                      ? Colors.red
-                                                      : Colors.blue)),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        ListView.builder(
-                                          shrinkWrap: true,
-                                          itemCount: isToday
-                                              ? controller.doneTaskList.length
+                                                    .yesterdayTaskList.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          final taskData = isToday
+                                              ? controller.taskList[index]
                                               : isTomorrow!
                                                   ? controller
-                                                      .tomorrowDoneTaskList
-                                                      .length
+                                                      .tomorrowTaskList[index]
                                                   : controller
-                                                      .yesterdayDoneTaskList
-                                                      .length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            final taskData = isToday
-                                                ? controller.doneTaskList[index]
-                                                : isTomorrow!
-                                                    ? controller
-                                                            .tomorrowDoneTaskList[
-                                                        index]
-                                                    : controller
-                                                            .yesterdayDoneTaskList[
-                                                        index];
-                                            return GestureDetector(
-                                              onTap: () {
-                                                // Get.to(() =>
-                                                //     EditTaskScreen(taskData: taskData));
-                                              },
+                                                      .yesterdayTaskList[index];
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              await Get.to(() => DetailScreen(
+                                                    taskData: taskData,
+                                                  ));
+                                              controller.fetchAllData();
+                                            },
+                                            child: LongPressDraggable(
+                                              data: taskData,
+                                              onDragStarted: () =>
+                                                  controller.changeDeleting(
+                                                      true, taskData["id"]),
+                                              onDraggableCanceled: (_, __) =>
+                                                  controller.changeDeleting(
+                                                      false, taskData["id"]),
+                                              feedback: Material(
+                                                color: Colors.transparent,
+                                                child: SizedBox(
+                                                  width: size.width * 1,
+                                                  child: Opacity(
+                                                    opacity: 0.8,
+                                                    child: isToday
+                                                        ? PlanningTaskWidget(
+                                                            taskData: taskData,
+                                                            isToday: true,
+                                                            onPressedCallBack:
+                                                                () {})
+                                                        : isTomorrow!
+                                                            ? PlanningTaskWidget(
+                                                                taskData:
+                                                                    taskData,
+                                                                isTomorrow:
+                                                                    true,
+                                                                onPressedCallBack:
+                                                                    () {})
+                                                            : PlanningTaskWidget(
+                                                                taskData:
+                                                                    taskData,
+                                                                onPressedCallBack:
+                                                                    () {}),
+                                                  ),
+                                                ),
+                                              ),
                                               child: isToday
-                                                  ? DoneTaskWidget(
+                                                  ? PlanningTaskWidget(
                                                       taskData: taskData,
                                                       isToday: true,
                                                       onPressedCallBack: () {
                                                         Map<String, dynamic>
                                                             updatedData = {
-                                                          'status':
-                                                              'On-progress'
+                                                          'status': 'Done'
                                                         };
                                                         controller.updateTask(
                                                             taskData['id'],
@@ -351,26 +197,198 @@ class TaskListScreen extends GetView<TaskListController> {
                                                       },
                                                     )
                                                   : isTomorrow!
-                                                      ? DoneTaskWidget(
+                                                      ? PlanningTaskWidget(
                                                           taskData: taskData,
                                                           isTomorrow: true,
                                                           onPressedCallBack:
-                                                              () {},
-                                                        )
-                                                      : DoneTaskWidget(
+                                                              () {
+                                                            Map<String, dynamic>
+                                                                updatedData = {
+                                                              'status':
+                                                                  'On-progress',
+                                                              'due_date':
+                                                                  'Hari ini'
+                                                            };
+                                                            controller
+                                                                .updateTask(
+                                                                    taskData[
+                                                                        'id'],
+                                                                    updatedData);
+                                                          })
+                                                      : PlanningTaskWidget(
                                                           taskData: taskData,
                                                           onPressedCallBack:
-                                                              () {},
-                                                        ),
-                                            );
-                                          },
-                                        )
-                                      ],
-                                    ),
+                                                              () {
+                                                            Map<String, dynamic>
+                                                                updatedData = {
+                                                              'status':
+                                                                  'On-progress',
+                                                              'due_date':
+                                                                  'Hari ini'
+                                                            };
+                                                            controller
+                                                                .updateTask(
+                                                                    taskData[
+                                                                        'id'],
+                                                                    updatedData);
+                                                          }),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    ],
+                                  ),
+                      ),
+                      isToday
+                          ? Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Selesai:',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: isToday
+                                            ? Colors.lightBlue
+                                            : (isYesterday!
+                                                ? Colors.red
+                                                : Colors.blue)),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: isToday
+                                        ? controller.doneTaskList.length
+                                        : isTomorrow!
+                                            ? controller
+                                                .tomorrowDoneTaskList.length
+                                            : controller
+                                                .yesterdayDoneTaskList.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      final taskData = isToday
+                                          ? controller.doneTaskList[index]
+                                          : isTomorrow!
+                                              ? controller
+                                                  .tomorrowDoneTaskList[index]
+                                              : controller
+                                                  .yesterdayDoneTaskList[index];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // Get.to(() =>
+                                          //     EditTaskScreen(taskData: taskData));
+                                        },
+                                        child: isToday
+                                            ? DoneTaskWidget(
+                                                taskData: taskData,
+                                                isToday: true,
+                                                onPressedCallBack: () {
+                                                  Map<String, dynamic>
+                                                      updatedData = {
+                                                    'status': 'On-progress'
+                                                  };
+                                                  controller.updateTask(
+                                                      taskData['id'],
+                                                      updatedData);
+                                                },
+                                              )
+                                            : isTomorrow!
+                                                ? DoneTaskWidget(
+                                                    taskData: taskData,
+                                                    isTomorrow: true,
+                                                    onPressedCallBack: () {},
+                                                  )
+                                                : DoneTaskWidget(
+                                                    taskData: taskData,
+                                                    onPressedCallBack: () {},
+                                                  ),
+                                      );
+                                    },
                                   )
-                                : Container(),
-                      ],
-                    ),
-                  ))));
+                                ],
+                              ),
+                            )
+                          : isYesterday!
+                              ? Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Selesai:',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: isToday
+                                                ? Colors.lightBlue
+                                                : (isYesterday!
+                                                    ? Colors.red
+                                                    : Colors.blue)),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: isToday
+                                            ? controller.doneTaskList.length
+                                            : isTomorrow!
+                                                ? controller
+                                                    .tomorrowDoneTaskList.length
+                                                : controller
+                                                    .yesterdayDoneTaskList
+                                                    .length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          final taskData = isToday
+                                              ? controller.doneTaskList[index]
+                                              : isTomorrow!
+                                                  ? controller
+                                                          .tomorrowDoneTaskList[
+                                                      index]
+                                                  : controller
+                                                          .yesterdayDoneTaskList[
+                                                      index];
+                                          return GestureDetector(
+                                            onTap: () {},
+                                            child: isToday
+                                                ? DoneTaskWidget(
+                                                    taskData: taskData,
+                                                    isToday: true,
+                                                    onPressedCallBack: () {
+                                                      Map<String, dynamic>
+                                                          updatedData = {
+                                                        'status': 'On-progress'
+                                                      };
+                                                      controller.updateTask(
+                                                          taskData['id'],
+                                                          updatedData);
+                                                    },
+                                                  )
+                                                : isTomorrow!
+                                                    ? DoneTaskWidget(
+                                                        taskData: taskData,
+                                                        isTomorrow: true,
+                                                        onPressedCallBack:
+                                                            () {},
+                                                      )
+                                                    : DoneTaskWidget(
+                                                        taskData: taskData,
+                                                        onPressedCallBack:
+                                                            () {},
+                                                      ),
+                                          );
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                )
+                              : Container(),
+                    ],
+                  ),
+                ))));
   }
 }
