@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:to_do_list/src/app/cores/firebase/firebase_auth/auth_method.dart';
 import 'package:to_do_list/src/app/cores/firebase/firestore/firestore_methods.dart';
-import 'package:to_do_list/src/app/data/modules/widgets/planning_task_widget.dart';
+import 'package:to_do_list/src/app/data/modules/login_screen/login_screen.dart';
 
 class TaskListController extends GetxController {
   FireStoreMethods fireStoreMethods = FireStoreMethods();
+  AuthMethod authMethod = AuthMethod();
   RxList taskList = [].obs;
   RxList doneTaskList = [].obs;
   RxList tomorrowTaskList = [].obs;
@@ -38,22 +40,17 @@ class TaskListController extends GetxController {
   }
 
   fetchTomorrowTask(email) async {
-    var result = await fireStoreMethods.getTomorrowTasks();
+    var result = await fireStoreMethods.getTomorrowTasks(email);
     tomorrowTaskList.assignAll(result);
   }
 
-  fetchTomorrowDoneTask(email) async {
-    var result = await fireStoreMethods.getTomorrowDoneTasks();
-    tomorrowDoneTaskList.assignAll(result);
-  }
-
   fetchYesterdayTask(email) async {
-    var result = await fireStoreMethods.getYesterdayTasks();
+    var result = await fireStoreMethods.getYesterdayTasks(email);
     yesterdayTaskList.assignAll(result);
   }
 
   fetchYesterdayDoneTask(email) async {
-    var result = await fireStoreMethods.getYesterdayDoneTasks();
+    var result = await fireStoreMethods.getYesterdayDoneTasks(email);
     yesterdayDoneTaskList.assignAll(result);
   }
 
@@ -73,6 +70,13 @@ class TaskListController extends GetxController {
     dragId.value = id;
   }
 
+  void logout() async {
+    await authMethod.singOut();
+    SharedPreferences pref = await _pref;
+    pref.remove('email');
+    Get.offAll(() => const LoginScreen());
+  }
+
   fetchAllData() async {
     isProcessing.value = true;
     await fetchTodayTasks(email);
@@ -84,7 +88,8 @@ class TaskListController extends GetxController {
     isProcessing.value = false;
     if (taskList.isEmpty && doneTaskList.isEmpty) {
       isEmptyTodayTask.value = true;
-    } else if (yesterdayTaskList.isEmpty && yesterdayDoneTaskList.isEmpty) {
+    }
+    if (yesterdayTaskList.isEmpty && yesterdayDoneTaskList.isEmpty) {
       isEmptyYesterdayTask.value = true;
     }
   }

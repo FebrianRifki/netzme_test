@@ -12,6 +12,7 @@ class CreateTaskScreen extends StatefulWidget {
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final TextEditingController nameTaskController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final GlobalKey<FormState> _taskNameFormKey = GlobalKey<FormState>();
   final CreateTaskController controller = Get.put(CreateTaskController());
 
   List<String> list = <String>['Hari ini', 'Besok'];
@@ -41,13 +42,19 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        TextFormField(
-                          controller: nameTaskController,
-                          decoration: const InputDecoration(
-                              label: Text('Nama Task'),
-                              border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)))),
+                        Form(
+                          key: _taskNameFormKey,
+                          child: TextFormField(
+                            controller: nameTaskController,
+                            decoration: const InputDecoration(
+                                label: Text('Nama Jadwal'),
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)))),
+                            validator: (value) {
+                              return controller.validateTaskName(value);
+                            },
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
@@ -85,8 +92,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                                     BorderRadius.all(Radius.circular(10)),
                               ),
                             ),
-                            maxLines:
-                                null, // Ini akan memungkinkan teks input untuk diperpanjang secara otomatis.
+                            maxLines: null,
                           ),
                         )
                       ],
@@ -95,8 +101,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
             ),
             Container(
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-              width: double
-                  .infinity, // Ini memastikan widget mengisi lebar penuh layar.
+              width: double.infinity,
               child: Row(
                 children: [
                   Expanded(
@@ -106,10 +111,41 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () async {
-                        await controller.createTask(nameTaskController.text,
-                            dropdownValue, descriptionController.text);
+                        if (controller.isProcessing.isTrue) {
+                        } else if (_taskNameFormKey.currentState!.validate()) {
+                          var result = await controller.createTask(
+                              nameTaskController.text,
+                              dropdownValue,
+                              descriptionController.text);
+                          if (result == 'success') {
+                            Get.snackbar(
+                              'Success',
+                              'Jadwal berhasil dibuat',
+                              colorText: Colors.white,
+                              duration: const Duration(seconds: 1),
+                              backgroundColor: Colors.blue,
+                            );
+                          } else {
+                            Get.snackbar(
+                              'Gagal',
+                              "Oops! something went wrong",
+                              duration: const Duration(seconds: 1),
+                              backgroundColor: Colors.redAccent,
+                            );
+                          }
+                        }
                       },
-                      child: const Text('Buat Jadwal'),
+                      child: Obx(
+                        () => controller.isProcessing.isTrue
+                            ? const SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text("Buat Jadwal"),
+                      ),
                     ),
                   ),
                   const SizedBox(

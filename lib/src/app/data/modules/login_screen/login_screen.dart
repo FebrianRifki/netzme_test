@@ -91,9 +91,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (controller.isProcessing.isTrue) {
                         } else if (_emailFormKey.currentState!.validate() &&
                             _passwordFormKey.currentState!.validate()) {
-                          await controller.signin(
+                          var result = await controller.signin(
                               email: emailController.text,
                               password: passwordController.text);
+                          if (result == 'success') {
+                            Get.snackbar(
+                              'Success',
+                              'Anda berhasil login!',
+                              colorText: Colors.white,
+                              duration: const Duration(seconds: 1),
+                              backgroundColor: Colors.blue,
+                            );
+                            Get.offAll(() => const TaskScreen());
+                          } else {
+                            Get.snackbar(
+                              'Gagal',
+                              controller.errorMessage.value,
+                              duration: const Duration(seconds: 1),
+                              backgroundColor: Colors.redAccent,
+                            );
+                          }
                         }
                       },
                       child: Obx(
@@ -105,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text("Sign in"),
+                            : const Text("Masuk"),
                       )),
                 ),
                 const SizedBox(
@@ -114,11 +131,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Text('Dont have an accout? '),
+                    const Text('Tidak punya akun? '),
                     GestureDetector(
-                      onTap: () => Get.to(const SingUpScreen()),
+                      onTap: () => controller.gotToSingUpScreen(),
                       child: const Text(
-                        'Sing up',
+                        'Daftar disini',
                         style: TextStyle(color: Colors.lightBlue),
                       ),
                     )
@@ -126,33 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 )
               ],
             ),
-            Obx(() {
-              if (controller.isSuccessLogin.isTrue) {
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Get.snackbar(
-                    'Success',
-                    'Login Successfully!',
-                    colorText: Colors.white,
-                    duration: const Duration(seconds: 1),
-                    backgroundColor: Colors.blue,
-                  );
-                });
-              }
-              return const SizedBox.shrink();
-            }),
-            Obx(() {
-              if (controller.isWrongCredential.isTrue) {
-                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                  Get.snackbar(
-                    'Gagal',
-                    controller.errorMessage.value,
-                    duration: const Duration(seconds: 1),
-                    backgroundColor: Colors.redAccent,
-                  );
-                });
-              }
-              return const SizedBox.shrink();
-            }),
           ],
         ),
       ),

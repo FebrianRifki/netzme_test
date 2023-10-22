@@ -7,7 +7,7 @@ class ControllerBinding implements Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => LoginController());
+    Get.lazyPut(() => TaskListController(), fenix: true);
     Get.lazyPut(() => SignUpController());
-    Get.lazyPut(() => TaskListController());
   }
 }

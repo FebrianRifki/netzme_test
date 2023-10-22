@@ -31,7 +31,7 @@ class TaskListScreen extends GetView<TaskListController> {
                 child: FloatingActionButton(
                   onPressed: () async {
                     await Get.to(() => const CreateTaskScreen());
-                    controller.fetchAllData();
+                    await controller.fetchWithOutProcessing();
                   },
                   backgroundColor:
                       controller.deleting.isTrue ? Colors.red : Colors.blue,
@@ -56,20 +56,49 @@ class TaskListScreen extends GetView<TaskListController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          height: 30,
+                          height: 50,
                           decoration: const BoxDecoration(color: Colors.blue),
-                          child: Center(
-                              child: Text(
-                                  isToday
-                                      ? 'Jadwal Hari ini'
-                                      : isYesterday!
-                                          ? 'Jadwal Kemaren'
-                                          : 'Jadwal Besok',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .merge(const TextStyle(
-                                          color: Colors.white))))),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    isToday
+                                        ? 'Jadwal Hari ini'
+                                        : isYesterday!
+                                            ? 'Jadwal Kemaren'
+                                            : 'Jadwal Besok',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .merge(const TextStyle(
+                                            color: Colors.white))),
+                                GestureDetector(
+                                  onTap: () async {
+                                    controller.logout();
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((timeStamp) {
+                                      Get.snackbar(
+                                        'Berhasil',
+                                        'Anda telah logout',
+                                        colorText: Colors.white,
+                                        duration: const Duration(seconds: 1),
+                                        backgroundColor: Colors.blue,
+                                      );
+                                    });
+                                  },
+                                  child: Text('Logout',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .merge(const TextStyle(
+                                              color: Colors.white))),
+                                ),
+                              ],
+                            ),
+                          )),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: controller.isProcessing.isTrue
@@ -91,7 +120,7 @@ class TaskListScreen extends GetView<TaskListController> {
                                     ? Column(
                                         children: [
                                           Image(image: AssetImage(emptyList)),
-                                          Text("Belum ada jadwal yang dibuat",
+                                          Text("Tidak ada jadwal kemaren",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyLarge),
@@ -103,8 +132,7 @@ class TaskListScreen extends GetView<TaskListController> {
                                             children: [
                                               Image(
                                                   image: AssetImage(emptyList)),
-                                              Text(
-                                                  "Belum ada jadwal yang dibuat",
+                                              Text("Belum ada untuk besok",
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyLarge),
@@ -232,8 +260,6 @@ class TaskListScreen extends GetView<TaskListController> {
                                                               ? PlanningTaskWidget(
                                                                   taskData:
                                                                       taskData,
-                                                                  isTomorrow:
-                                                                      true,
                                                                   onPressedCallBack:
                                                                       () {
                                                                     Map<String,
@@ -253,6 +279,8 @@ class TaskListScreen extends GetView<TaskListController> {
                                                               : PlanningTaskWidget(
                                                                   taskData:
                                                                       taskData,
+                                                                  isTomorrow:
+                                                                      true,
                                                                   onPressedCallBack:
                                                                       () {
                                                                     Map<String,
@@ -276,7 +304,9 @@ class TaskListScreen extends GetView<TaskListController> {
                                             ],
                                           ),
                       ),
-                      isToday && controller.isEmptyTodayTask.isFalse
+                      isToday &&
+                              controller.isEmptyTodayTask.isFalse &&
+                              controller.isProcessing.isFalse
                           ? Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Column(

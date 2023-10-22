@@ -62,50 +62,38 @@ class FireStoreMethods {
     return todayDoneList;
   }
 
-  getYesterdayTasks() async {
+  getYesterdayTasks(email) async {
     var querySnapshot = await _firestore
         .collection('tasks')
         .where('due_date', isEqualTo: 'Kemarin')
         .where('status', isEqualTo: 'On-progress')
+        .where('email', isEqualTo: email)
         .get();
     yesterdayList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
     return yesterdayList;
   }
 
-  getYesterdayDoneTasks() async {
+  getYesterdayDoneTasks(email) async {
     var querySnapshot = await _firestore
         .collection('tasks')
         .where('due_date', isEqualTo: 'Kemarin')
         .where('status', isEqualTo: 'Done')
+        .where('email', isEqualTo: email)
         .get();
     yesterdayDoneList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
     return yesterdayDoneList;
   }
 
-  Future<List<Map<String, dynamic>>> getTomorrowTasks() async {
+  Future<List<Map<String, dynamic>>> getTomorrowTasks(email) async {
     try {
       var querySnapshot = await _firestore
           .collection('tasks')
           .where('due_date', isEqualTo: 'Besok')
           .where('status', isEqualTo: 'On-progress')
+          .where('email', isEqualTo: email)
           .get();
       tomorrowList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
       return tomorrowList;
-    } catch (e) {
-      print(e);
-      return [];
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getTomorrowDoneTasks() async {
-    try {
-      var querySnapshot = await _firestore
-          .collection('tasks')
-          .where('due_date', isEqualTo: 'Besok')
-          .where('status', isEqualTo: 'Done')
-          .get();
-      tomorrowDoneList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
-      return tomorrowDoneList;
     } catch (e) {
       print(e);
       return [];
