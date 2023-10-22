@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_do_list/src/app/models/task.dart';
 import 'package:uuid/uuid.dart';
 
 class FireStoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   List<Map<String, dynamic>> todayList = [];
   List<Map<String, dynamic>> todayDoneList = [];
   List<Map<String, dynamic>> tomorrowList = [];
@@ -17,9 +19,15 @@ class FireStoreMethods {
   Future<String> createTask(
       String name, String status, String description) async {
     try {
+      final SharedPreferences prefs = await _prefs;
       String taskId = const Uuid().v1();
+      String? email = prefs.getString('email');
       Task task = Task(
-          id: taskId, name: name, status: status, description: description);
+          email: email!,
+          id: taskId,
+          name: name,
+          status: status,
+          description: description);
       await _firestore.collection('tasks').doc(taskId).set(task.toJson());
       return 'success';
     } catch (err) {
@@ -27,12 +35,13 @@ class FireStoreMethods {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getTodayTasks() async {
+  Future<List<Map<String, dynamic>>> getTodayTasks(email) async {
     try {
       var querySnapshot = await _firestore
           .collection('tasks')
           .where('due_date', isEqualTo: 'Hari ini')
           .where('status', isEqualTo: 'On-progress')
+          .where('email', isEqualTo: email)
           .get();
       todayList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
       return todayList;
@@ -42,11 +51,12 @@ class FireStoreMethods {
     }
   }
 
-  getTodayDoneTask() async {
+  getTodayDoneTask(email) async {
     var querySnapshot = await _firestore
         .collection('tasks')
         .where('due_date', isEqualTo: 'Hari ini')
         .where('status', isEqualTo: 'Done')
+        .where('email', isEqualTo: email)
         .get();
     todayDoneList.assignAll(querySnapshot.docs.map((doc) => doc.data()));
     return todayDoneList;

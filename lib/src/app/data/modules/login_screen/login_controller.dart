@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_do_list/src/app/cores/firebase/firebase_auth/auth_method.dart';
 import 'package:to_do_list/src/app/data/modules/tasks_screen/task_screen.dart';
 
@@ -12,12 +13,15 @@ class LoginController extends GetxController {
 
   AuthMethod authMethod = AuthMethod();
   signin({required email, required password}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     isProcessing.value = true;
     String res = await authMethod.loginUser(email: email, password: password);
     if (res == "success") {
+      prefs.setString('email', email);
       isSuccessLogin.value = true;
+      Get.delete<LoginController>();
       await Future.delayed(const Duration(milliseconds: 1600), () {
-        Get.to(() => const TaskScreen());
+        Get.offAll(() => const TaskScreen());
       });
     } else {
       errorMessage.value = 'Wrong username or password';
@@ -26,14 +30,13 @@ class LoginController extends GetxController {
       await Future.delayed(const Duration(milliseconds: 1000));
       isWrongCredential.value = false;
     }
-    isProcessing.value =
-        false; // Set this only once, outside of the if-else block
+    isProcessing.value = false;
   }
 
   validateEmail(email) {
     if (email.isEmpty) {
       isErrorEmail.value = true;
-      return 'Email is required';
+      return 'Email tidak boleh kosong';
     } else {
       isErrorEmail.value = false;
       return null;
@@ -43,7 +46,7 @@ class LoginController extends GetxController {
   validatePassword(password) {
     if (password.isEmpty) {
       isErrorPassword.value = true;
-      return 'Password is required';
+      return 'Password tidak boleh kosong';
     } else {
       isErrorPassword.value = false;
       return null;

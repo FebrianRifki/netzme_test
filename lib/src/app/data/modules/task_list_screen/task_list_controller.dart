@@ -1,15 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:to_do_list/src/app/cores/firebase/firestore/firestore_methods.dart';
 import 'package:to_do_list/src/app/data/modules/widgets/planning_task_widget.dart';
 
 class TaskListController extends GetxController {
-  @override
-  void onInit() {
-    fetchAllData();
-    super.onInit();
-  }
-
   FireStoreMethods fireStoreMethods = FireStoreMethods();
   RxList taskList = [].obs;
   RxList doneTaskList = [].obs;
@@ -20,46 +15,57 @@ class TaskListController extends GetxController {
   final deleting = false.obs;
   final dragId = "".obs;
   RxBool isProcessing = false.obs;
+  RxBool isEmptyTodayTask = false.obs;
+  RxBool isEmptyYesterdayTask = false.obs;
+  String? email;
+  final Future<SharedPreferences> _pref = SharedPreferences.getInstance();
+  @override
+  void onInit() async {
+    SharedPreferences pref = await _pref;
+    email = pref.getString('email');
+    fetchAllData();
+    super.onInit();
+  }
 
-  fetchTodayTasks() async {
-    var result = await fireStoreMethods.getTodayTasks();
+  fetchTodayTasks(email) async {
+    var result = await fireStoreMethods.getTodayTasks(email);
     taskList.assignAll(result);
   }
 
-  fetchTodayDoneTasks() async {
-    var result = await fireStoreMethods.getTodayDoneTask();
+  fetchTodayDoneTasks(email) async {
+    var result = await fireStoreMethods.getTodayDoneTask(email);
     doneTaskList.assignAll(result);
   }
 
-  fetchTomorrowTask() async {
+  fetchTomorrowTask(email) async {
     var result = await fireStoreMethods.getTomorrowTasks();
     tomorrowTaskList.assignAll(result);
   }
 
-  fetchTomorrowDoneTask() async {
+  fetchTomorrowDoneTask(email) async {
     var result = await fireStoreMethods.getTomorrowDoneTasks();
     tomorrowDoneTaskList.assignAll(result);
   }
 
-  fetchYesterdayTask() async {
+  fetchYesterdayTask(email) async {
     var result = await fireStoreMethods.getYesterdayTasks();
     yesterdayTaskList.assignAll(result);
   }
 
-  fetchYesterdayDoneTask() async {
+  fetchYesterdayDoneTask(email) async {
     var result = await fireStoreMethods.getYesterdayDoneTasks();
     yesterdayDoneTaskList.assignAll(result);
   }
 
   void updateTask(id, updatedData) async {
     await fireStoreMethods.updateTaskData(id, updatedData);
-    fetchAllData();
+    fetchWithOutProcessing();
   }
 
   deleteTask(id) async {
     await fireStoreMethods.deleteTask(id);
     deleting.value = false;
-    fetchAllData();
+    fetchWithOutProcessing();
   }
 
   void changeDeleting(bool value, String id) {
@@ -69,12 +75,31 @@ class TaskListController extends GetxController {
 
   fetchAllData() async {
     isProcessing.value = true;
-    await fetchTodayTasks();
-    await fetchTodayDoneTasks();
-    await fetchTomorrowTask();
-    await fetchTodayDoneTasks();
-    await fetchYesterdayTask();
-    await fetchYesterdayDoneTask();
+    await fetchTodayTasks(email);
+    await fetchTodayDoneTasks(email);
+    await fetchTomorrowTask(email);
+    await fetchTodayDoneTasks(email);
+    await fetchYesterdayTask(email);
+    await fetchYesterdayDoneTask(email);
     isProcessing.value = false;
+    if (taskList.isEmpty && doneTaskList.isEmpty) {
+      isEmptyTodayTask.value = true;
+    } else if (yesterdayTaskList.isEmpty && yesterdayDoneTaskList.isEmpty) {
+      isEmptyYesterdayTask.value = true;
+    }
+  }
+
+  fetchWithOutProcessing() async {
+    await fetchTodayTasks(email);
+    await fetchTodayDoneTasks(email);
+    await fetchTomorrowTask(email);
+    await fetchTodayDoneTasks(email);
+    await fetchYesterdayTask(email);
+    await fetchYesterdayDoneTask(email);
+    if (taskList.isEmpty && doneTaskList.isEmpty) {
+      isEmptyTodayTask.value = true;
+    } else if (yesterdayTaskList.isEmpty && yesterdayDoneTaskList.isEmpty) {
+      isEmptyYesterdayTask.value = true;
+    }
   }
 }

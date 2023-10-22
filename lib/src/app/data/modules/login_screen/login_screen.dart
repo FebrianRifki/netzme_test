@@ -88,7 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white),
                       onPressed: () async {
-                        if (_emailFormKey.currentState!.validate() &&
+                        if (controller.isProcessing.isTrue) {
+                        } else if (_emailFormKey.currentState!.validate() &&
                             _passwordFormKey.currentState!.validate()) {
                           await controller.signin(
                               email: emailController.text,
