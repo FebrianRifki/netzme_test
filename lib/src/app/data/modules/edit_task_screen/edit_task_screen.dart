@@ -15,6 +15,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   String dropdownValue = 'Hari ini';
   final TextEditingController taskNameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final GlobalKey<FormState> _taskNameFormKey = GlobalKey<FormState>();
   final EditTaskController controller = Get.put(EditTaskController());
 
   @override
@@ -50,13 +51,19 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         const EdgeInsets.only(left: 10.0, right: 10.0, top: 10),
                     child: Column(
                       children: [
-                        TextFormField(
-                          controller: taskNameController,
-                          decoration: const InputDecoration(
-                              label: Text('Nama Task'),
-                              border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)))),
+                        Form(
+                          key: _taskNameFormKey,
+                          child: TextFormField(
+                            controller: taskNameController,
+                            decoration: const InputDecoration(
+                                label: Text('Nama Jadwal'),
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)))),
+                            validator: (value) {
+                              return controller.validateTaskName(value);
+                            },
+                          ),
                         ),
                         const SizedBox(
                           height: 10,
@@ -112,20 +119,40 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         foregroundColor: Colors.white,
                       ),
                       onPressed: () {
-                        var updatedData = {
-                          'name': taskNameController.text,
-                          'due_date': dropdownValue,
-                          'description': descriptionController.text
-                        };
-                        controller.updateTask(
-                            widget.taskData['id'], updatedData);
-                        widget.taskData['name'] = taskNameController.text;
-                        widget.taskData['due_date'] = dropdownValue;
-                        widget.taskData['description'] =
-                            descriptionController.text;
-                        setState(() {});
+                        if (controller.isProcessing.isTrue) {
+                        } else if (_taskNameFormKey.currentState!.validate()) {
+                          var updatedData = {
+                            'name': taskNameController.text,
+                            'due_date': dropdownValue,
+                            'description': descriptionController.text
+                          };
+                          controller.updateTask(
+                              widget.taskData['id'], updatedData);
+                          widget.taskData['name'] = taskNameController.text;
+                          widget.taskData['due_date'] = dropdownValue;
+                          widget.taskData['description'] =
+                              descriptionController.text;
+                          Get.snackbar(
+                            'Success',
+                            'Edit data berhasil',
+                            colorText: Colors.white,
+                            duration: const Duration(seconds: 1),
+                            backgroundColor: Colors.blue,
+                          );
+                          setState(() {});
+                        }
                       },
-                      child: const Text('Simpan Jadwal'),
+                      child: Obx(
+                        () => controller.isProcessing.isTrue
+                            ? const SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text("Edit Jadwal"),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
