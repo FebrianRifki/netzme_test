@@ -17,8 +17,8 @@ class TaskListController extends GetxController {
   final deleting = false.obs;
   final dragId = "".obs;
   RxBool isProcessing = false.obs;
-  RxBool isEmptyTodayTask = false.obs;
-  RxBool isEmptyYesterdayTask = false.obs;
+  // RxBool isEmptyTodayTask = false.obs;
+  // RxBool isEmptyYesterdayTask = false.obs;
   String? email;
   final Future<SharedPreferences> _pref = SharedPreferences.getInstance();
   @override
@@ -86,12 +86,6 @@ class TaskListController extends GetxController {
     await fetchYesterdayTask(email);
     await fetchYesterdayDoneTask(email);
     isProcessing.value = false;
-    if (taskList.isEmpty && doneTaskList.isEmpty) {
-      isEmptyTodayTask.value = true;
-    }
-    if (yesterdayTaskList.isEmpty && yesterdayDoneTaskList.isEmpty) {
-      isEmptyYesterdayTask.value = true;
-    }
   }
 
   fetchWithOutProcessing() async {
@@ -101,10 +95,5 @@ class TaskListController extends GetxController {
     await fetchTodayDoneTasks(email);
     await fetchYesterdayTask(email);
     await fetchYesterdayDoneTask(email);
-    if (taskList.isEmpty && doneTaskList.isEmpty) {
-      isEmptyTodayTask.value = true;
-    } else if (yesterdayTaskList.isEmpty && yesterdayDoneTaskList.isEmpty) {
-      isEmptyYesterdayTask.value = true;
-    }
   }
 }

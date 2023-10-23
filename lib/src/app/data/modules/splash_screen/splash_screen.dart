@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:to_do_list/src/app/cores/firebase/firestore/firestore_methods.dart';
 import 'package:to_do_list/src/app/cores/utils/values/images_string.dart';
 import 'package:to_do_list/src/app/data/modules/splash_screen/splash_screen_controller.dart';
 import 'package:flutter/animation.dart';
@@ -13,14 +14,15 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final SplashScreenController controller = Get.put(SplashScreenController());
+
   @override
   void initState() {
+    controller.animationStart();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    controller.animationStart();
     return Scaffold(
         backgroundColor: Colors.blue,
         body: Stack(
@@ -47,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Obx(
               () => AnimatedPositioned(
                 duration: const Duration(milliseconds: 2500),
-                top: controller.isAnimated.value ? 170 : -170,
+                top: controller.isAnimated.value ? 170 : 120,
                 left: 50,
                 child: CircleAvatar(
                   radius: 150,

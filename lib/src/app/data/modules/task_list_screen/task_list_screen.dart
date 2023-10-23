@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:to_do_list/src/app/cores/utils/values/images_string.dart';
 import 'package:to_do_list/src/app/data/modules/create_task_screen/create_task_screen.dart';
 import 'package:to_do_list/src/app/data/modules/detail_screen/detail_screen.dart';
-import 'package:to_do_list/src/app/data/modules/edit_task_screen/edit_task_screen.dart';
 import 'package:to_do_list/src/app/data/modules/task_list_screen/task_list_controller.dart';
 import 'package:to_do_list/src/app/data/modules/widgets/done_task_widget.dart';
 import 'package:to_do_list/src/app/data/modules/widgets/planning_task_widget.dart';
@@ -31,7 +30,7 @@ class TaskListScreen extends GetView<TaskListController> {
                 child: FloatingActionButton(
                   onPressed: () async {
                     await Get.to(() => const CreateTaskScreen());
-                    await controller.fetchWithOutProcessing();
+                    controller.fetchAllData();
                   },
                   backgroundColor:
                       controller.deleting.isTrue ? Colors.red : Colors.blue,
@@ -105,7 +104,9 @@ class TaskListScreen extends GetView<TaskListController> {
                             ? const LinearProgressIndicator(
                                 color: Colors.blue,
                               )
-                            : isToday && controller.isEmptyTodayTask.isTrue
+                            : isToday &&
+                                    controller.taskList.isEmpty &&
+                                    controller.doneTaskList.isEmpty
                                 ? Column(
                                     children: [
                                       Image(image: AssetImage(emptyList)),
@@ -116,7 +117,8 @@ class TaskListScreen extends GetView<TaskListController> {
                                     ],
                                   )
                                 : isYesterday! &&
-                                        controller.isEmptyYesterdayTask.isTrue
+                                        controller.yesterdayTaskList.isEmpty &&
+                                        controller.yesterdayDoneTaskList.isEmpty
                                     ? Column(
                                         children: [
                                           Image(image: AssetImage(emptyList)),
@@ -132,7 +134,8 @@ class TaskListScreen extends GetView<TaskListController> {
                                             children: [
                                               Image(
                                                   image: AssetImage(emptyList)),
-                                              Text("Belum ada untuk besok",
+                                              Text(
+                                                  "Belum ada jadwal untuk besok",
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyLarge),
@@ -253,10 +256,7 @@ class TaskListScreen extends GetView<TaskListController> {
                                                                     updatedData);
                                                               },
                                                             )
-                                                          : isYesterday! &&
-                                                                  controller
-                                                                      .isEmptyYesterdayTask
-                                                                      .isFalse
+                                                          : isYesterday!
                                                               ? PlanningTaskWidget(
                                                                   taskData:
                                                                       taskData,
@@ -269,7 +269,10 @@ class TaskListScreen extends GetView<TaskListController> {
                                                                       'status':
                                                                           'On-progress',
                                                                       'due_date':
-                                                                          'Hari ini'
+                                                                          'Hari ini',
+                                                                      'created_at':
+                                                                          Timestamp.fromDate(
+                                                                              DateTime.now())
                                                                     };
                                                                     controller.updateTask(
                                                                         taskData[
@@ -290,7 +293,10 @@ class TaskListScreen extends GetView<TaskListController> {
                                                                       'status':
                                                                           'On-progress',
                                                                       'due_date':
-                                                                          'Hari ini'
+                                                                          'Hari ini',
+                                                                      'created_at':
+                                                                          Timestamp.fromDate(
+                                                                              DateTime.now())
                                                                     };
                                                                     controller.updateTask(
                                                                         taskData[
@@ -305,7 +311,7 @@ class TaskListScreen extends GetView<TaskListController> {
                                           ),
                       ),
                       isToday &&
-                              controller.isEmptyTodayTask.isFalse &&
+                              controller.doneTaskList.isNotEmpty &&
                               controller.isProcessing.isFalse
                           ? Padding(
                               padding: const EdgeInsets.all(10.0),
@@ -379,7 +385,8 @@ class TaskListScreen extends GetView<TaskListController> {
                               ),
                             )
                           : isYesterday! &&
-                                  controller.isEmptyYesterdayTask.isFalse
+                                  controller.yesterdayDoneTaskList.isNotEmpty &&
+                                  controller.isProcessing.isFalse
                               ? Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(

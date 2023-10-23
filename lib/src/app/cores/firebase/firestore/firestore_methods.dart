@@ -119,32 +119,32 @@ class FireStoreMethods {
 
   handleDataStatus() async {
     try {
-      Timestamp todayTimestamp = Timestamp.fromDate(DateTime.now());
-      Timestamp yesterdayTimestamp =
-          Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 1)));
+      DateTime now = DateTime.now();
+      DateTime today = DateTime(now.year, now.month, now.day);
+      DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
+
+      Timestamp todayTimestamp = Timestamp.fromDate(today);
+      Timestamp yesterdayTimestamp = Timestamp.fromDate(yesterday); // value 22
 
       // delete expired tasks
-      QuerySnapshot<Map<String, dynamic>> queryYesterdaySnapshot =
-          await _firestore
-              .collection('tasks')
-              .where('created_at', isLessThan: yesterdayTimestamp)
-              .where('status', isEqualTo: 'Kemarin')
-              .get();
-      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
-          in queryYesterdaySnapshot.docs) {
-        String docId = doc.id;
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('tasks')
+          .where('created_at',
+              isLessThan:
+                  yesterdayTimestamp) // 22 == 22 , yang dihapus tanggal 21
+          .where('due_date', isEqualTo: 'Kemarin')
+          .get();
 
-        await _firestore
-            .collection('tasks')
-            .doc(docId)
-            .update({'status': 'Kemarin'});
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in querySnapshot.docs) {
+        await doc.reference.delete();
       }
 
       // update yesterday status tasks
       QuerySnapshot<Map<String, dynamic>> queryTodaySnapshot = await _firestore
           .collection('tasks')
           .where('created_at', isLessThan: todayTimestamp)
-          .where('status', isEqualTo: 'Hari ini')
+          .where('due_date', isEqualTo: 'Hari ini')
           .get();
 
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc
@@ -154,15 +154,15 @@ class FireStoreMethods {
         await _firestore
             .collection('tasks')
             .doc(docId)
-            .update({'status': 'Kemarin'});
+            .update({'due_date': 'Kemarin'});
       }
 
       // update today status tasks
       QuerySnapshot<Map<String, dynamic>> queryTomorrowSnapshot =
           await _firestore
               .collection('tasks')
-              .where('created_at', isLessThan: todayTimestamp)
-              .where('status', isEqualTo: 'Besok')
+              .where('created_at', isLessThanOrEqualTo: todayTimestamp)
+              .where('due_date', isEqualTo: 'Besok')
               .get();
 
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc
@@ -172,7 +172,7 @@ class FireStoreMethods {
         await _firestore
             .collection('tasks')
             .doc(docId)
-            .update({'status': 'Hari ini'});
+            .update({'due_date': 'Hari ini'});
       }
     } catch (err) {
       return err.toString();
