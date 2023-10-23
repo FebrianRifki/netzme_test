@@ -124,14 +124,12 @@ class FireStoreMethods {
       DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
 
       Timestamp todayTimestamp = Timestamp.fromDate(today);
-      Timestamp yesterdayTimestamp = Timestamp.fromDate(yesterday); // value 22
+      Timestamp yesterdayTimestamp = Timestamp.fromDate(yesterday);
 
       // delete expired tasks
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
           .collection('tasks')
-          .where('created_at',
-              isLessThan:
-                  yesterdayTimestamp) // 22 == 22 , yang dihapus tanggal 21
+          .where('created_at', isLessThan: yesterdayTimestamp)
           .where('due_date', isEqualTo: 'Kemarin')
           .get();
 
